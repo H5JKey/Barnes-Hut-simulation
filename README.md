@@ -1,1 +1,1 @@
-# barnes-hut-algorithm
+# Barnes-Hut-simulation
