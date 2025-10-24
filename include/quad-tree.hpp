@@ -1,12 +1,7 @@
 #include <vector>
 #include <memory>
-
+#include "particle.hpp"
 #include <SFML/Graphics.hpp>
-
-class Particle {
-public:
-    sf::Vector2f position;
-};
 
 
 class QuadTree {
@@ -21,18 +16,22 @@ private:
         sf::Vector2f center;
         double size;
         bool isLeaf;
-        Particle* particle;
+        const Particle* particle;
+        double totalMass;
+        sf::Vector2f centerOfMass;
+        
 
         void insert(const Particle& particle);
 
-        Node(sf::Vector2f center, double size) : isLeaf(true), center(center), size(size), particle(nullptr) {}
+        Node(sf::Vector2f center, double size) : isLeaf(true), center(center), size(size), particle(nullptr), centerOfMass(0,0), totalMass(0) {}
     };
     std::unique_ptr<Node> root;
 public:
     QuadTree(sf::Vector2u size);
-    
-    void insert(Particle* particle);
+    void insert(const Particle* particle);
+    void rebuild(const std::vector<Particle>& particles);
+
 private:
-    void insert(Particle* particle, Node* node);
+    void insert(const Particle* particle, Node* node);
 
 };
