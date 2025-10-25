@@ -2,6 +2,7 @@ add_executable(Barnes-Hut-simulation
     main.cpp
     quad-tree.cpp
     particle.cpp
+    physics-engine.cpp
 )
 
 target_link_libraries(Barnes-Hut-simulation PRIVATE 
