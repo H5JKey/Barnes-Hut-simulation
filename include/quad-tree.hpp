@@ -21,7 +21,7 @@ private:
         sf::Vector2f center;
         double size;
         bool isLeaf;
-        std::optional<Particle> particle; 
+        const Particle *particle; 
         float totalMass;
         sf::Vector2f centerOfMass;
         
@@ -35,12 +35,12 @@ public:
     QuadTree(sf::Vector2u size);
     void rebuild(const std::vector<Particle>& particles);
     sf::Vector2f calculateForce(Particle& particle, float theta, const PhysicsEngine& physics);
-    void insert(const Particle& particle);
+    void insert(const Particle* particle);
     void updateCenterOfMass();
     void draw(sf::RenderWindow& window) const;
 private:
     void updateCenterOfMass(Node* node);
-    void insert(const Particle& particle, Node*node);
+    void insert(const Particle* particle, Node*node, int depth = 1);
     sf::Vector2f calculateForce(const Particle& particle, Node* node, float theta, const PhysicsEngine& physics);
 
     void draw(sf::RenderWindow& window, Node* node) const;

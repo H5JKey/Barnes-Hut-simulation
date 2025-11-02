@@ -1,20 +1,20 @@
 #include "quad-tree.hpp"
 #include <iostream>
 
-void QuadTree::insert(const Particle& particle) {
+void QuadTree::insert(const Particle* particle) {
     insert(particle, root.get());
 }
 
-void QuadTree::insert(const Particle& particle, Node* node) {
-    static int depth = 1;
-    if (depth>100) return;
-    if (node->isLeaf && !node->particle.has_value()) {
+void QuadTree::insert(const Particle* particle, Node* node, int depth) {
+    if (depth>20) {
+        return;
+    }
+    if (node->isLeaf && !node->particle) {
             node->particle = particle;
             return;
     }
-    if (node->isLeaf && node->particle.has_value()) {
-        Particle oldParticle = node->particle.value();
-        node->particle.reset();
+    if (node->isLeaf && node->particle) {
+        const Particle *oldParticle = node->particle;
         node->isLeaf = false;
         
         node->northWest = std::make_unique<Node>(
@@ -36,37 +36,25 @@ void QuadTree::insert(const Particle& particle, Node* node) {
             sf::Vector2f(node->center.x + node->size / 4.f, node->center.y + node->size / 4.f),
             node->size / 2.f
         );
-        depth+=1;
-        insert(oldParticle, node);
-        depth-=1;
-        depth+=1;
-        insert(particle, node);
-        depth-=1;
+        insert(oldParticle, node, depth + 1);
+        insert(particle, node, depth + 1);
         return;
     }
 
     if (!node->isLeaf) {
-        float x = particle.getPosition().x;
-        float y = particle.getPosition().y;
+        float x = particle->getPosition().x;
+        float y = particle->getPosition().y;
         if (x < node->center.x && y < node->center.y) {
-            depth+=1;
-            insert(particle, node->northWest.get());
-            depth-=1;
+            insert(particle, node->northWest.get(), depth + 1);
         }
         else if (x >= node->center.x && y < node->center.y)  {
-                        depth+=1;
-            insert(particle, node->northEast.get());
-                        depth-=1;
+            insert(particle, node->northEast.get(), depth + 1);
         }
         else if (x < node->center.x && y >= node->center.y) {
-                        depth+=1;
-            insert(particle, node->southWest.get());
-                        depth-=1;
+            insert(particle, node->southWest.get(), depth + 1);
         }
         else {
-                        depth+=1;
-            insert(particle, node->southEast.get());
-                        depth-=1;
+            insert(particle, node->southEast.get(), depth + 1);
         }
     }
 }
@@ -78,7 +66,7 @@ QuadTree::QuadTree(sf::Vector2u size) {
 void QuadTree::rebuild(const std::vector<Particle>& particles) {
     root = std::make_unique<Node>(root->center, root->size);
     for (const Particle& p: particles) {
-        insert(p);
+        insert(&p);
     }
     updateCenterOfMass();
 }
@@ -87,7 +75,7 @@ void QuadTree::updateCenterOfMass(Node* node) {
     float totalMass = 0;
     sf::Vector2f centerOfMass = {0,0};
     if (node->isLeaf) {
-        if (node->particle.has_value()) {
+        if (node->particle) {
             node->totalMass = node->particle->getMass();
             node->centerOfMass = node->particle->getPosition();
         } else {
@@ -133,7 +121,7 @@ sf::Vector2f QuadTree::calculateForce(const Particle& particle, Node* node, floa
         return {0,0};
     }
     if (node->isLeaf) {
-        if (node->particle.has_value() && node->particle->getPosition() != particle.getPosition()) {
+        if (node->particle && node->particle->getPosition() != particle.getPosition()) {
             return physics.calculateForce(particle, *node->particle);
         }
         return {0,0};

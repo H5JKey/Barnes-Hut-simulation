@@ -8,7 +8,7 @@ class PhysicsEngine {
 private:
     float G;
 public:
-    PhysicsEngine() : G(1000) {}
+    PhysicsEngine() : G(667) {}
 
     sf::Vector2f calculateForce(const Particle& p1, const Particle& p2) const;
     sf::Vector2f calculateForce(const Particle& p1, sf::Vector2f massCenterPosition, float totalMass) const;

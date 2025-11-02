@@ -5,7 +5,6 @@
 #include <random>
 #include <cmath>
 #include <vector>
-
 #include <iostream>
 
 int main() {
@@ -15,14 +14,25 @@ int main() {
     PhysicsEngine physics;
     
     std::vector<Particle> particles;
-    for (float phi=0; phi<6.28; phi+=0.005) {
-        float x = 400 + 100*cos(phi);
-        float y = 400 + 100*sin(phi);
-        particles.emplace_back(sf::Vector2f(x, y), 1);
-        sf::Vector2f velocity(100*sin(phi), 100*cos(phi));
+    size_t num = 1000;
+    particles.emplace_back(sf::Vector2f(400, 400), 65000);
+
+    for (size_t i = 0; i < num; i++) {
+        float radius = 10 + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/300));
+
+        float phi = 2 * 3.14159 * static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        
+        float x = 400 + radius * cos(phi) + (rand() % 20 - 10);
+        float y = 400 + radius * sin(phi) + (rand() % 20 - 10);
+        
+        particles.emplace_back(sf::Vector2f(x, y), rand() % 5 + 1);
+
+        float orbital_velocity = sqrt(10000.0f / radius) * 50;
+
+        sf::Vector2f velocity(orbital_velocity * sin(-phi) + (rand() % 50 - 50), 
+                            orbital_velocity * cos(phi) + (rand() % 50 - 50));
         particles.back().setVelocity(velocity);
     }
-    particles.emplace_back(sf::Vector2f(400, 400), 1000);
     sf::Clock clock;
     while (window.isOpen()) {
         sf::Event event;
@@ -30,11 +40,8 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        sf::Time elapsedTime = clock.restart();
+        sf::Time elapsedTime = clock.restart() * 0.1f;
         tree.rebuild(particles);
-        if (elapsedTime.asSeconds() > 0.033f) {
-            elapsedTime = sf::seconds(0.033f);
-        }
         particles.erase(
                 std::remove_if(
                     particles.begin(),
@@ -45,9 +52,10 @@ int main() {
                     }),
                 particles.end()
             );
-        for (auto& p : particles) {
+        #pragma omp parallel for
+        for (int i = 1; i < particles.size(); i++) {
+            auto& p = particles[i];
             sf::Vector2f force = tree.calculateForce(p, 0.5f, physics);
-            //std::cout<<force.x << ' '<< force.y<<'\n';
             physics.accelerate(p, force);
             p.update(elapsedTime);
         }
