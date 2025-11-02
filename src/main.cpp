@@ -7,6 +7,10 @@
 #include <vector>
 #include <iostream>
 
+enum {
+    PARTICLES_NUM = 3000
+};
+
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Galaxy Simulation");
     
@@ -14,10 +18,9 @@ int main() {
     PhysicsEngine physics;
     
     std::vector<Particle> particles;
-    size_t num = 1000;
     particles.emplace_back(sf::Vector2f(400, 400), 65000);
 
-    for (size_t i = 0; i < num; i++) {
+    for (size_t i = 0; i < PARTICLES_NUM; i++) {
         float radius = 10 + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/300));
 
         float phi = 2 * 3.14159 * static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
@@ -40,7 +43,10 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        sf::Time elapsedTime = clock.restart() * 0.1f;
+        sf::Time elapsedTime = clock.restart();
+        if (elapsedTime > sf::seconds(0.005f)) {
+            elapsedTime = sf::seconds(0.005f);
+        }
         tree.rebuild(particles);
         particles.erase(
                 std::remove_if(
