@@ -2,9 +2,9 @@
 
 ## Demo
 
-![Demo](https://github.com/user-attachments/assets/f48801fa-0a4b-427f-86f4-5f1c8224dfbf)
+![Demo](https://github.com/user-attachments/assets/58ee4869-6969-4c53-ad78-d5f411a4a485)
 
-## Building
+## Build
 
 ```sh
 git clone https://github.com/H5JKey/Barnes-Hut-simulation.git
