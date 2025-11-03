@@ -127,13 +127,13 @@ sf::Vector2f QuadTree::calculateForce(const Particle& particle, Node* node, floa
         return {0,0};
     } 
     else {
-        float distance = physics.computeLength(particle.getPosition() - node->centerOfMass);
-        if (distance < 1e-10f) {
+        float squaredDistance = physics.computeSquaredLength(particle.getPosition() - node->centerOfMass);
+        if (squaredDistance < 1e-10f) {
             return {0,0};
         }
-        float ratio = node->size / distance;
+        float ratio = node->size * node->size / squaredDistance;
         
-        if (ratio < theta) {
+        if (ratio < theta*theta) {
             return physics.calculateForce(particle, node->centerOfMass, node->totalMass);
         }
         else {
