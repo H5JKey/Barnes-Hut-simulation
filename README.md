@@ -9,7 +9,7 @@
 ```sh
 git clone https://github.com/H5JKey/Barnes-Hut-simulation.git
 mkdir build && cd build
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ./Barnes-Hut-simulation
 ```
