@@ -2,32 +2,24 @@
 #include <iostream>
 
 
-Particle::Particle(const sf::Vector2f& position, float mass) : pixel(sf::Vector2f(3,3)), velocity(0,0), acceleration(0,0) {
+Particle::Particle(const sf::Vector2f& position, float mass) : velocity(0,0), acceleration(0,0) {
     setPosition(position);
     setMass(mass);
 }
 
-void Particle::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    target.draw(pixel, states);
+
+void Particle::updatePosition(sf::Time& elapsedTime) {
+	this->position += (this->velocity * elapsedTime.asSeconds());
 }
 
-void Particle::updatePosition(sf::Time& ellapsedTime) {
-	this->position += (this->velocity * ellapsedTime.asSeconds());
-    pixel.setPosition(position);
+void Particle::updateVelocity(sf::Time& elapsedTime) {
+	this->velocity += (elapsedTime.asSeconds() * this->acceleration);
 }
 
-void Particle::updateVelocity(sf::Time& ellapsedTime) {
-	this->velocity += (ellapsedTime.asSeconds() * this->acceleration);
-}
-
-void Particle::update(sf::Time& ellapsedTime) {
-    updateVelocity(ellapsedTime);
-    updatePosition(ellapsedTime);
+void Particle::update(sf::Time& elapsedTime) {
+    updateVelocity(elapsedTime);
+    updatePosition(elapsedTime);
     acceleration = {0,0};
-}
-
-sf::FloatRect Particle::getGlobalBounds() const {
-    return pixel.getGlobalBounds();
 }
 
 void Particle::accelerate(sf::Vector2f force) {
@@ -44,7 +36,6 @@ float Particle::getMass() const {
 
 void Particle::setPosition(const sf::Vector2f& position) {
     this->position = position;
-    pixel.setPosition(position);
 }
 
 sf::Vector2f Particle::getPosition() const {
@@ -53,7 +44,6 @@ sf::Vector2f Particle::getPosition() const {
 
 void Particle::setVelocity(const sf::Vector2f& velocity) {
     this->velocity = velocity;
-    pixel.setPosition(velocity);
 }
 
 sf::Vector2f Particle::getVelocity() const {

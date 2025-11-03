@@ -8,7 +8,7 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 3000
+    PARTICLES_NUM = 1000
 };
 
 int main() {
@@ -67,9 +67,12 @@ int main() {
         }
         
         window.clear();
-        for (auto& p : particles) {
-            p.draw(window);
+        sf::VertexArray particleBodies(sf::Points, particles.size());
+        for (int i=0; i < particles.size(); i++) {
+            particleBodies[i].position = particles[i].getPosition();
+            particleBodies[i].color = sf::Color::White;
         }
+        window.draw(particleBodies);
         tree.draw(window);
         window.display();
     }
