@@ -6,6 +6,7 @@ project(Barnes-Hut-simulation
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+
 add_subdirectory(libs)
 add_subdirectory(src)
 target_include_directories(Barnes-Hut-simulation PRIVATE include)

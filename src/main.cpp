@@ -8,7 +8,7 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 5000
+    PARTICLES_NUM = 20000
 };
 
 int main() {

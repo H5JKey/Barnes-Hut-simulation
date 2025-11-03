@@ -5,6 +5,14 @@ add_executable(Barnes-Hut-simulation
     physics-engine.cpp
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    if(MSVC)
+        target_compile_options(Barnes-Hut-simulation PRIVATE /O2 /fp:fast)
+    else()
+        target_compile_options(Barnes-Hut-simulation PRIVATE -O3 -ffast-math -march=native)
+    endif()
+endif()
+
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
