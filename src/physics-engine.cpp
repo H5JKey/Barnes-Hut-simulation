@@ -12,9 +12,8 @@ sf::Vector2f PhysicsEngine::calculateForce(const Particle& p1, const Particle& p
 sf::Vector2f PhysicsEngine::calculateForce(const Particle& p1, sf::Vector2f massCenterPosition, float totalMass) const {
     sf::Vector2f direction = (massCenterPosition - p1.getPosition());
     float squaredLen = computeSquaredLength(direction);
-    squaredLen = fmax(1, squaredLen);
     direction /= sqrtf(squaredLen);
-    return direction * G * p1.getMass() * totalMass / squaredLen;
+    return direction * G * p1.getMass() * totalMass / (squaredLen+0.1f);
 }
 
 void PhysicsEngine::accelerate(Particle& p, sf::Vector2f force) {

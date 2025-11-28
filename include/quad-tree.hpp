@@ -13,11 +13,7 @@ class QuadTree {
 private:
     class Node {
     public:
-        std::unique_ptr<Node> northWest;
-        std::unique_ptr<Node> northEast;
-        std::unique_ptr<Node> southWest;
-        std::unique_ptr<Node> southEast;
-
+        int children[4];
         sf::Vector2f center;
         double size;
         bool isLeaf;
@@ -27,21 +23,22 @@ private:
         
 
         void insert(const Particle& particle);
+        
+        Node() = default;
+        ~Node() = default;
 
-        Node(sf::Vector2f center, double size) : isLeaf(true), center(center), size(size), particle(), centerOfMass(0,0), totalMass(0) {}
+        Node(sf::Vector2f center, double size) : isLeaf(true), center(center), size(size), particle(), centerOfMass(0,0), totalMass(0) {
+        }
     };
-    std::unique_ptr<Node> root;
+    std::vector<Node> nodes;
 public:
     QuadTree(sf::Vector2u size);
-    void rebuild(const std::vector<Particle>& particles);
+    void rebuild(const std::vector<Particle>& particles, sf::Vector2u size);
     sf::Vector2f calculateForce(Particle& particle, float theta, const PhysicsEngine& physics);
     void insert(const Particle* particle);
     void updateCenterOfMass();
     void draw(sf::RenderWindow& window) const;
 private:
-    void updateCenterOfMass(Node* node);
-    void insert(const Particle* particle, Node*node, int depth = 1);
-    sf::Vector2f calculateForce(const Particle& particle, Node* node, float theta, const PhysicsEngine& physics);
-
-    void draw(sf::RenderWindow& window, Node* node) const;
+    void insert(const Particle* particle, int node_index);
+    sf::Vector2f calculateForce(const Particle& particle, int node_index, float theta, const PhysicsEngine& physics);
 };

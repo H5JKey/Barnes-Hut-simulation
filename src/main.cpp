@@ -8,13 +8,13 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 20000
+    PARTICLES_NUM = 10000
 };
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Galaxy Simulation");
     
-    QuadTree tree(sf::Vector2u(800, 800));
+    QuadTree tree(window.getSize());
     PhysicsEngine physics;
     
     std::vector<Particle> particles;
@@ -47,7 +47,7 @@ int main() {
         if (elapsedTime > sf::seconds(0.005f)) {
             elapsedTime = sf::seconds(0.005f);
         }
-        tree.rebuild(particles);
+        tree.rebuild(particles, window.getSize());
         particles.erase(
                 std::remove_if(
                     particles.begin(),
