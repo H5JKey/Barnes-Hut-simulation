@@ -1,18 +1,18 @@
 #include "quad-tree.hpp"
 #include <iostream>
 
-void QuadTree::insert(const Particle* particle) {
-    insert(particle, 0);
+void QuadTree::insert(int particle_index, const std::vector<Particle>& particles) {
+    insert(particle_index, 0, particles);
 }
 
-void QuadTree::insert(const Particle* particle, int node_index) {
+void QuadTree::insert(int particle_index, int node_index, const std::vector<Particle>& particles) {
     for (int i=0; i<50; i++) {
-        if (nodes[node_index].isLeaf && !nodes[node_index].particle) {
-                nodes[node_index].particle = particle;
+        if (nodes[node_index].isLeaf && nodes[node_index].particleIndex == -1) {
+                nodes[node_index].particleIndex = particle_index;
                 return;
         }
-        if (nodes[node_index].isLeaf && nodes[node_index].particle) {
-            const Particle *oldParticle = nodes[node_index].particle;
+        if (nodes[node_index].isLeaf && nodes[node_index].particleIndex != -1) {
+            int oldParticleIndex = nodes[node_index].particleIndex;
             nodes[node_index].isLeaf = false;
             
             nodes[node_index].children[0] = nodes.size();
@@ -38,13 +38,13 @@ void QuadTree::insert(const Particle* particle, int node_index) {
                 sf::Vector2f(nodes[node_index].center.x + nodes[node_index].size / 4.f, nodes[node_index].center.y + nodes[node_index].size / 4.f),
                 nodes[node_index].size / 2.f
             );
-            insert(oldParticle, node_index);
+            insert(oldParticleIndex, node_index, particles);
             continue;
         }
 
         if (!nodes[node_index].isLeaf) {
-            float x = particle->getPosition().x;
-            float y = particle->getPosition().y;
+            float x = particles[particle_index].getPosition().x;
+            float y = particles[particle_index].getPosition().y;
             if (x < nodes[node_index].center.x && y < nodes[node_index].center.y) {
                 node_index = nodes[node_index].children[0];
             }
@@ -71,19 +71,19 @@ void QuadTree::rebuild(const std::vector<Particle>& particles, sf::Vector2u size
     nodes.resize(0);
     nodes.reserve(particles.size());
     nodes.emplace_back(static_cast<sf::Vector2f>(size) / 2.0f, std::max(size.x, size.y));
-    for (const Particle& p: particles) {
-        insert(&p);
+    for (int i=0; i<particles.size(); i++) {
+        insert(i, particles);
     }
-    updateCenterOfMass();
+    updateCenterOfMass(particles);
 }
 
 
-void QuadTree::updateCenterOfMass() {
+void QuadTree::updateCenterOfMass(const std::vector<Particle>& particles) {
     for (int i=nodes.size() - 1; i >= 0; i--) {
         if (nodes[i].isLeaf) {
-            if (nodes[i].particle) {
-                nodes[i].centerOfMass = nodes[i].particle->getPosition();
-                nodes[i].totalMass = nodes[i].particle->getMass();
+            if (nodes[i].particleIndex != -1) {
+                nodes[i].centerOfMass = particles[nodes[i].particleIndex].getPosition();
+                nodes[i].totalMass = particles[nodes[i].particleIndex].getMass();
             }
             else {
                 nodes[i].totalMass = 0;
@@ -100,18 +100,18 @@ void QuadTree::updateCenterOfMass() {
     }
 }
 
-sf::Vector2f QuadTree::calculateForce(Particle& particle, float theta, const PhysicsEngine& physics) {
-    return calculateForce(particle, 0, theta, physics);
+sf::Vector2f QuadTree::calculateForce(Particle& particle, float theta, const PhysicsEngine& physics, const std::vector<Particle>& particles) {
+    return calculateForce(particle, 0, theta, physics, particles);
 }
 
 
-sf::Vector2f QuadTree::calculateForce(const Particle& particle, int node_index, float theta, const PhysicsEngine& physics) {
+sf::Vector2f QuadTree::calculateForce(const Particle& particle, int node_index, float theta, const PhysicsEngine& physics, const std::vector<Particle>& particles) {
     if (nodes[node_index].totalMass == 0) {
         return {0,0};
     }
     if (nodes[node_index].isLeaf) {
-        if (nodes[node_index].particle && nodes[node_index].particle->getPosition() != particle.getPosition()) {
-            return physics.calculateForce(particle, *nodes[node_index].particle);
+        if (nodes[node_index].particleIndex != -1 && particles[nodes[node_index].particleIndex].getPosition() != particle.getPosition()) {
+            return physics.calculateForce(particle, particles[nodes[node_index].particleIndex]);
         }
         return {0,0};
     } 
@@ -125,7 +125,7 @@ sf::Vector2f QuadTree::calculateForce(const Particle& particle, int node_index, 
         else {
             sf::Vector2f totalForce(0, 0);
             for (int child = 0; child < 4; child++) {
-                totalForce += calculateForce(particle, nodes[node_index].children[child], theta, physics);
+                totalForce += calculateForce(particle, nodes[node_index].children[child], theta, physics, particles);
             }
             return totalForce;
         }

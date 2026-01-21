@@ -8,7 +8,7 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 10000
+    PARTICLES_NUM = 50000
 };
 
 int main() {
@@ -37,6 +37,8 @@ int main() {
         particles.back().setVelocity(velocity);
     }
     sf::Clock clock;
+    sf::Time av = sf::Time::Zero;
+    long long cnt = 0;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -44,6 +46,8 @@ int main() {
                 window.close();
         }
         sf::Time elapsedTime = clock.restart();
+        av+=elapsedTime;
+        cnt++;
         if (elapsedTime > sf::seconds(0.005f)) {
             elapsedTime = sf::seconds(0.005f);
         }
@@ -61,7 +65,7 @@ int main() {
         #pragma omp parallel for
         for (int i = 1; i < particles.size(); i++) {
             auto& p = particles[i];
-            sf::Vector2f force = tree.calculateForce(p, 0.5f, physics);
+            sf::Vector2f force = tree.calculateForce(p, 0.5f, physics, particles);
             physics.accelerate(p, force);
             p.update(elapsedTime);
         }
@@ -76,6 +80,7 @@ int main() {
         tree.draw(window);
         window.display();
     }
+    std::cout<<"AVERAGE FRAME TIME: "<<av.asMilliseconds()/cnt<<'\n';
     
     return 0;
 }

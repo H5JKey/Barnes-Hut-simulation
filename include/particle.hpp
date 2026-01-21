@@ -4,13 +4,9 @@
 class Particle {
 private:
     sf::Vector2f position;
-    float mass;
-
     sf::Vector2f velocity;
     sf::Vector2f acceleration;
-
-    void updatePosition(sf::Time& elapsedTime);
-	void updateVelocity(sf::Time& elapsedTime);
+    float mass;
 
 public:
     Particle(const sf::Vector2f& position, float mass);
@@ -28,4 +24,8 @@ public:
     sf::Vector2f getVelocity() const;
 
     ~Particle() = default;
+    
+private:
+    void updatePosition(sf::Time& elapsedTime);
+	void updateVelocity(sf::Time& elapsedTime);
 };
