@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "particle.hpp"
 #include <cmath>
-#include "utils.h"
+#include "utils.hpp"
 
 class PhysicsEngine {
 private:

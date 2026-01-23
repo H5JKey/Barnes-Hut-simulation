@@ -1,61 +1,70 @@
 #include "quad-tree.hpp"
 #include <iostream>
 
-void QuadTree::insert(int particle_index, const std::vector<Particle>& particles) {
-    insert(particle_index, 0, particles);
+void QuadTree::insert(int targetPartilceIndex, const std::vector<Particle>& particles) {
+    insert(targetPartilceIndex, particles, 0);
 }
 
-void QuadTree::insert(int particle_index, int node_index, const std::vector<Particle>& particles) {
-    for (int i=0; i<50; i++) {
-        if (nodes[node_index].isLeaf && nodes[node_index].particleIndex == -1) {
-                nodes[node_index].particleIndex = particle_index;
+void QuadTree::insert(int targetPartilceIndex, const std::vector<Particle>& particles, int nodeIndex) {
+    int depth = 0;
+    int MAX_DEPTH = 50;
+    while (true) {
+        depth++;
+        if (depth > MAX_DEPTH) {
+            nodes[nodeIndex].particleIndex = targetPartilceIndex;
+            return;
+        }
+
+        if (nodes[nodeIndex].isLeaf) {
+            if (nodes[nodeIndex].particleIndex == -1) {
+                nodes[nodeIndex].particleIndex = targetPartilceIndex;
                 return;
-        }
-        if (nodes[node_index].isLeaf && nodes[node_index].particleIndex != -1) {
-            int oldParticleIndex = nodes[node_index].particleIndex;
-            nodes[node_index].isLeaf = false;
-            
-            nodes[node_index].children[0] = nodes.size();
+            }
+            int oldParticleIndex = nodes[nodeIndex].particleIndex;
+            nodes[nodeIndex].isLeaf = false;
+
+            nodes[nodeIndex].children[0] = nodes.size();
             nodes.emplace_back(
-                sf::Vector2f(nodes[node_index].center.x - nodes[node_index].size / 4.f, nodes[node_index].center.y - nodes[node_index].size / 4.f),
-                nodes[node_index].size / 2.f
+                sf::Vector2f(nodes[nodeIndex].center.x - nodes[nodeIndex].size / 4.f, nodes[nodeIndex].center.y - nodes[nodeIndex].size / 4.f),
+                nodes[nodeIndex].size / 2.f
             );
 
-            nodes[node_index].children[1] = nodes.size();
+            nodes[nodeIndex].children[1] = nodes.size();
             nodes.emplace_back(
-                sf::Vector2f(nodes[node_index].center.x + nodes[node_index].size / 4.f, nodes[node_index].center.y - nodes[node_index].size / 4.f),
-                nodes[node_index].size / 2.f
+                sf::Vector2f(nodes[nodeIndex].center.x + nodes[nodeIndex].size / 4.f, nodes[nodeIndex].center.y - nodes[nodeIndex].size / 4.f),
+                nodes[nodeIndex].size / 2.f
             );
-            
-            nodes[node_index].children[2] = nodes.size();
+
+            nodes[nodeIndex].children[2] = nodes.size();
             nodes.emplace_back(
-                sf::Vector2f(nodes[node_index].center.x - nodes[node_index].size / 4.f, nodes[node_index].center.y + nodes[node_index].size / 4.f),
-                nodes[node_index].size / 2.f
+                sf::Vector2f(nodes[nodeIndex].center.x - nodes[nodeIndex].size / 4.f, nodes[nodeIndex].center.y + nodes[nodeIndex].size / 4.f),
+                nodes[nodeIndex].size / 2.f
             );
-            
-            nodes[node_index].children[3] = nodes.size();
+
+            nodes[nodeIndex].children[3] = nodes.size();
             nodes.emplace_back(
-                sf::Vector2f(nodes[node_index].center.x + nodes[node_index].size / 4.f, nodes[node_index].center.y + nodes[node_index].size / 4.f),
-                nodes[node_index].size / 2.f
+                sf::Vector2f(nodes[nodeIndex].center.x + nodes[nodeIndex].size / 4.f, nodes[nodeIndex].center.y + nodes[nodeIndex].size / 4.f),
+                nodes[nodeIndex].size / 2.f
             );
-            insert(oldParticleIndex, node_index, particles);
+            insert(oldParticleIndex, particles, nodeIndex);
             continue;
-        }
 
-        if (!nodes[node_index].isLeaf) {
-            float x = particles[particle_index].getPosition().x;
-            float y = particles[particle_index].getPosition().y;
-            if (x < nodes[node_index].center.x && y < nodes[node_index].center.y) {
-                node_index = nodes[node_index].children[0];
+
+        }
+        else {
+            float x = particles[targetPartilceIndex].getPosition().x;
+            float y = particles[targetPartilceIndex].getPosition().y;
+            if (x < nodes[nodeIndex].center.x && y < nodes[nodeIndex].center.y) {
+                nodeIndex = nodes[nodeIndex].children[0];
             }
-            else if (x >= nodes[node_index].center.x && y < nodes[node_index].center.y)  {
-                node_index = nodes[node_index].children[1];
+            else if (x >= nodes[nodeIndex].center.x && y < nodes[nodeIndex].center.y)  {
+                nodeIndex = nodes[nodeIndex].children[1];
             }
-            else if (x < nodes[node_index].center.x && y >= nodes[node_index].center.y) {
-                node_index = nodes[node_index].children[2];
+            else if (x < nodes[nodeIndex].center.x && y >= nodes[nodeIndex].center.y) {
+                nodeIndex = nodes[nodeIndex].children[2];
             }
             else {
-                node_index = nodes[node_index].children[3];
+                nodeIndex = nodes[nodeIndex].children[3];
             }
         }
     }
@@ -100,32 +109,32 @@ void QuadTree::updateCenterOfMass(const std::vector<Particle>& particles) {
     }
 }
 
-sf::Vector2f QuadTree::calculateForce(Particle& particle, float theta, const PhysicsEngine& physics, const std::vector<Particle>& particles) {
-    return calculateForce(particle, 0, theta, physics, particles);
+sf::Vector2f QuadTree::calculateForce(int targetParticleIndex, const std::vector<Particle>& particles, float theta, const PhysicsEngine& physics) {
+    return calculateForce(targetParticleIndex, particles, 0, theta, physics);
 }
 
 
-sf::Vector2f QuadTree::calculateForce(const Particle& particle, int node_index, float theta, const PhysicsEngine& physics, const std::vector<Particle>& particles) {
-    if (nodes[node_index].totalMass == 0) {
+sf::Vector2f QuadTree::calculateForce(int targetParticleIndex, const std::vector<Particle>& particles, int nodeIndex, float theta, const PhysicsEngine& physics) {
+    if (nodes[nodeIndex].totalMass == 0) {
         return {0,0};
     }
-    if (nodes[node_index].isLeaf) {
-        if (nodes[node_index].particleIndex != -1 && particles[nodes[node_index].particleIndex].getPosition() != particle.getPosition()) {
-            return physics.calculateForce(particle, particles[nodes[node_index].particleIndex]);
+    if (nodes[nodeIndex].isLeaf) {
+        if (nodes[nodeIndex].particleIndex != -1 && particles[nodes[nodeIndex].particleIndex].getPosition() != particles[targetParticleIndex].getPosition()) {
+            return physics.calculateForce(particles[targetParticleIndex], particles[nodes[nodeIndex].particleIndex]);
         }
         return {0,0};
     } 
     else {
-        float squaredDistance = physics.computeSquaredLength(particle.getPosition() - nodes[node_index].centerOfMass);
-        float ratio = nodes[node_index].size * nodes[node_index].size / squaredDistance;
+        float squaredDistance = physics.computeSquaredLength(particles[targetParticleIndex].getPosition() - nodes[nodeIndex].centerOfMass);
+        float ratio = nodes[nodeIndex].size * nodes[nodeIndex].size / squaredDistance;
         
         if (ratio < theta*theta) {
-            return physics.calculateForce(particle, nodes[node_index].centerOfMass, nodes[node_index].totalMass);
+            return physics.calculateForce(particles[targetParticleIndex], nodes[nodeIndex].centerOfMass, nodes[nodeIndex].totalMass);
         }
         else {
             sf::Vector2f totalForce(0, 0);
             for (int child = 0; child < 4; child++) {
-                totalForce += calculateForce(particle, nodes[node_index].children[child], theta, physics, particles);
+                totalForce += calculateForce(targetParticleIndex, particles, nodes[nodeIndex].children[child], theta, physics);
             }
             return totalForce;
         }

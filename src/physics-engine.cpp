@@ -6,7 +6,7 @@ sf::Vector2f PhysicsEngine::calculateForce(const Particle& p1, const Particle& p
     float len = computeLength(direction);
     len = fmax(2, len);
     direction /= len;
-    return direction * G * p1.getMass() * p2.getMass() / (len*len);
+    return direction * G * p1.getMass() * p2.getMass() / (len*len+0.1f);
 }
 
 sf::Vector2f PhysicsEngine::calculateForce(const Particle& p1, sf::Vector2f massCenterPosition, float totalMass) const noexcept{
