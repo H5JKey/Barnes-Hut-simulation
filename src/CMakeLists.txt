@@ -3,6 +3,7 @@ add_executable(Barnes-Hut-simulation
     quad-tree.cpp
     particle.cpp
     physics-engine.cpp
+    force-calculator.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")

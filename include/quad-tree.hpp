@@ -31,13 +31,12 @@ private:
     };
     std::vector<Node> nodes;
 public:
-    QuadTree(sf::Vector2u size);
+    QuadTree();
     void rebuild(const std::vector<Particle>& particles, sf::Vector2u size);
-    sf::Vector2f calculateForce(int targetPartilceIndex, const std::vector<Particle>& particles, float theta, const PhysicsEngine& physics);
     void insert(int targetPartilceIndex, const std::vector<Particle>& particles);
-    void updateCenterOfMass(const std::vector<Particle>& particles);
     void draw(sf::RenderWindow& window) const;
+    size_t size();
+    Node& getNode(int i);
 private:
     void insert(int targetPartilceIndex, const std::vector<Particle>& particles, int nodeIndex);
-    sf::Vector2f calculateForce(int targetPartilceIndex, const std::vector<Particle>& particles, int nodeIndex, float theta, const PhysicsEngine& physics);
 };
