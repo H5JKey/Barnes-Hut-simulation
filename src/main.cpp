@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+﻿#include <SFML/Graphics.hpp>
 #include "quad-tree.hpp"
 #include "particle.hpp"
 #include "physics-engine.hpp"
@@ -8,35 +8,37 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 10000
+    PARTICLES_NUM = 80000
 };
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Galaxy Simulation");
+    sf::RenderWindow window(sf::VideoMode(1600, 1600), "Galaxy Simulation");
     
     QuadTree tree(window.getSize());
     PhysicsEngine physics;
     
     std::vector<Particle> particles;
-    particles.emplace_back(sf::Vector2f(400, 400), 65000);
+    particles.emplace_back(sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2), 170000);
 
     for (size_t i = 0; i < PARTICLES_NUM; i++) {
         float radius = 10 + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/300));
 
         float phi = 2 * 3.14159 * static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
         
-        float x = 400 + radius * cos(phi) + (rand() % 20 - 10);
-        float y = 400 + radius * sin(phi) + (rand() % 20 - 10);
+        float x = window.getSize().x / 2 + radius * cos(phi) + (rand() % 20 - 10);
+        float y = window.getSize().y / 2 + radius * sin(phi) + (rand() % 20 - 10);
         
-        particles.emplace_back(sf::Vector2f(x, y), rand() % 5 + 1);
+        particles.emplace_back(sf::Vector2f(x, y), rand() % 1500 + 1);
 
-        float orbital_velocity = sqrt(10000.0f / radius) * 50;
+        float orbital_velocity = sqrt(10000.0f / radius) * 400;
 
         sf::Vector2f velocity(orbital_velocity * sin(-phi) + (rand() % 50 - 50), 
                             orbital_velocity * cos(phi) + (rand() % 50 - 50));
         particles.back().setVelocity(velocity);
     }
     sf::Clock clock;
+    sf::Time av = sf::Time::Zero;
+    long long cnt = 0;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -44,10 +46,11 @@ int main() {
                 window.close();
         }
         sf::Time elapsedTime = clock.restart();
-        if (elapsedTime > sf::seconds(0.005f)) {
-            elapsedTime = sf::seconds(0.005f);
+        av+=elapsedTime;
+        cnt++;
+        if (elapsedTime > sf::seconds(0.0002f)) {
+            elapsedTime = sf::seconds(0.0002f);
         }
-        tree.rebuild(particles, window.getSize());
         particles.erase(
                 std::remove_if(
                     particles.begin(),
@@ -58,12 +61,12 @@ int main() {
                     }),
                 particles.end()
             );
+        tree.rebuild(particles, window.getSize());
         #pragma omp parallel for
-        for (int i = 1; i < particles.size(); i++) {
-            auto& p = particles[i];
-            sf::Vector2f force = tree.calculateForce(p, 0.5f, physics);
-            physics.accelerate(p, force);
-            p.update(elapsedTime);
+        for (int i = 0; i < particles.size(); i++) {
+            sf::Vector2f force = tree.calculateForce(i, particles, 0.5f, physics);
+            physics.accelerate(particles[i], force);
+            particles[i].update(elapsedTime);
         }
         
         window.clear();
@@ -73,9 +76,10 @@ int main() {
             particleBodies[i].color = sf::Color::White;
         }
         window.draw(particleBodies);
-        tree.draw(window);
+        //tree.draw(window);
         window.display();
     }
+    std::cout<<"AVERAGE FRAME TIME: "<<av.asMilliseconds()/cnt<<'\n';
     
     return 0;
 }
