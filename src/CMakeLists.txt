@@ -1,16 +1,32 @@
 add_executable(Barnes-Hut-simulation 
     main.cpp
     quad-tree.cpp
-    particle.cpp
+    particle-system.cpp
     physics-engine.cpp
     force-calculator.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     if(MSVC)
-        target_compile_options(Barnes-Hut-simulation PRIVATE /O2 /fp:fast)
+        target_compile_options(Barnes-Hut-simulation PRIVATE 
+        /O2
+        /fp:fast
+        /arch:AVX2
+        /GL
+        /Oi
+    )
     else()
-        target_compile_options(Barnes-Hut-simulation PRIVATE -O3 -ffast-math -march=native)
+        target_compile_options(Barnes-Hut-simulation PRIVATE 
+        -O3 
+        -ffast-math 
+        -march=native
+        -fno-trapping-math
+        -fno-signed-zeros
+        -fno-math-errno
+        -fassociative-math
+        -frename-registers
+        -fomit-frame-pointer
+    )
     endif()
 endif()
 

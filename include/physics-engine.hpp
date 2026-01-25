@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "particle.hpp"
+#include "particle-system.hpp"
 #include <cmath>
 #include "utils.hpp"
 
@@ -11,9 +11,7 @@ private:
 public:
     PhysicsEngine() : G(667) {}
 
-    sf::Vector2f calculateForce(const Particle& p1, const Particle& p2) const noexcept;
-    sf::Vector2f calculateForce(const Particle& p1, sf::Vector2f massCenterPosition, float totalMass) const noexcept;
-    void accelerate(Particle& p, sf::Vector2f force) noexcept;
+    sf::Vector2f calculateForce(float mass1, sf::Vector2f position1, float mass2, sf::Vector2f position2) const noexcept;
     float computeLength(sf::Vector2f vec) const noexcept;
     float computeSquaredLength(sf::Vector2f vec) const noexcept;
 };

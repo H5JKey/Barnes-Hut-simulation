@@ -1,24 +1,13 @@
 #include "physics-engine.hpp"
 #include <iostream>
 
-sf::Vector2f PhysicsEngine::calculateForce(const Particle& p1, const Particle& p2) const noexcept{
-    sf::Vector2f direction = (p2.getPosition() - p1.getPosition());
+sf::Vector2f PhysicsEngine::calculateForce(float mass1, sf::Vector2f position1, float mass2, sf::Vector2f position2) const noexcept{
+    sf::Vector2f direction = (position2 - position1);
     float len = computeLength(direction);
-    len = fmax(2, len);
     direction /= len;
-    return direction * G * p1.getMass() * p2.getMass() / (len*len+0.1f);
+    return direction * G * mass1 * mass2 / (len*len+0.1f);
 }
 
-sf::Vector2f PhysicsEngine::calculateForce(const Particle& p1, sf::Vector2f massCenterPosition, float totalMass) const noexcept{
-    sf::Vector2f direction = (massCenterPosition - p1.getPosition());
-    float squaredLen = computeSquaredLength(direction);
-    direction /= fastSqrt(squaredLen);
-    return direction * G * p1.getMass() * totalMass / (squaredLen+0.1f);
-}
-
-void PhysicsEngine::accelerate(Particle& p, sf::Vector2f force) noexcept{
-    p.accelerate(force);
-}
 
 float PhysicsEngine::computeLength(sf::Vector2f vec) const noexcept{
     float len = fastSqrt(vec.x * vec.x + vec.y * vec.y);

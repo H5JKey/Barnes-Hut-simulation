@@ -1,7 +1,7 @@
 #include "quad-tree.hpp"
 #include <iostream>
 
-void QuadTree::insert(int targetPartilceIndex, const std::vector<Particle>& particles) {
+void QuadTree::insert(int targetPartilceIndex,  const ParticleSystem& particles) {
     insert(targetPartilceIndex, particles, 0);
 }
 
@@ -15,7 +15,7 @@ QuadTree::Node& QuadTree::getNode(int i){
 
 
 
-void QuadTree::insert(int targetPartilceIndex, const std::vector<Particle>& particles, int nodeIndex) {
+void QuadTree::insert(int targetPartilceIndex,  const ParticleSystem& particles, int nodeIndex) {
     int depth = 0;
     int MAX_DEPTH = 50;
     while (true) {
@@ -62,8 +62,8 @@ void QuadTree::insert(int targetPartilceIndex, const std::vector<Particle>& part
 
         }
         else {
-            float x = particles[targetPartilceIndex].getPosition().x;
-            float y = particles[targetPartilceIndex].getPosition().y;
+            float x = particles.getPosition(targetPartilceIndex).x;
+            float y = particles.getPosition(targetPartilceIndex).y;
             if (x < nodes[nodeIndex].center.x && y < nodes[nodeIndex].center.y) {
                 nodeIndex = nodes[nodeIndex].children[0];
             }
@@ -85,11 +85,11 @@ QuadTree::QuadTree() {
     nodes.reserve(100);
 }
 
-void QuadTree::rebuild(const std::vector<Particle>& particles, sf::Vector2u size) {
+void QuadTree::rebuild(const ParticleSystem& particles, sf::Vector2u size) {
     nodes.resize(0);
-    nodes.reserve(particles.size());
+    nodes.reserve(particles.getCount());
     nodes.emplace_back(static_cast<sf::Vector2f>(size) / 2.0f, std::max(size.x, size.y));
-    for (int i=0; i<particles.size(); i++) {
+    for (int i=0; i<particles.getCount(); i++) {
         insert(i, particles);
     }
 }
