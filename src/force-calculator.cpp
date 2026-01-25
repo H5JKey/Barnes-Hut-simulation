@@ -8,7 +8,7 @@ void BarnesHutCalculator::calculateForces(const ParticleSystem& particles, std::
     forces.resize(particles.getCount());
     quadTree->rebuild(particles, worldSize);
     updateCenterOfMass(particles);
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic, 32)
     for (int i=0; i<particles.getCount(); i++) {
         forces[i] = calculateForceWithTree(i, particles, theta);
     }

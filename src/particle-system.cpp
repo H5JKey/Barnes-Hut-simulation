@@ -34,13 +34,21 @@ void ParticleSystem::init() {
 
 
 void ParticleSystem::updatePosition(sf::Time& elapsedTime) {
-    for (int i=0; i<count; i++)
-	    position[i] += velocity[i] * elapsedTime.asSeconds();
+    float dt = elapsedTime.asSeconds();
+    #pragma omp parallel for simd 
+    for (int i=0; i<count; i++) {
+	    position[i].x += velocity[i].x * dt;
+        position[i].y += velocity[i].y * dt;
+    }
 }
 
 void ParticleSystem::updateVelocity(sf::Time& elapsedTime) {
-	for (int i=0; i<count; i++)
-	    velocity[i] += acceleration[i] * elapsedTime.asSeconds();
+    float dt = elapsedTime.asSeconds();
+    #pragma omp parallel for simd 
+	for (int i=0; i<count; i++) {
+	    velocity[i].x += acceleration[i].x * dt;
+        velocity[i].y += acceleration[i].y * dt;
+    }
 }
 
 void ParticleSystem::update(sf::Time& elapsedTime) {
@@ -64,12 +72,18 @@ void ParticleSystem::update(sf::Time& elapsedTime) {
             count--;
         }
     }
-    std::fill(acceleration.begin(), acceleration.end(), sf::Vector2f(0,0));
+    #pragma omp parallel for
+    for (int i = 0; i < count; i++) {
+        acceleration[i] = sf::Vector2f(0, 0);
+    }
 }
 
 void ParticleSystem::accelerate(std::vector<sf::Vector2f> force) {
-    for (int i=0; i<count; i++)
-        acceleration[i] += force[i] / mass[i];
+    #pragma omp parallel for
+    for (int i = 0; i < count; i++) {
+        acceleration[i].x += force[i].x / mass[i];
+        acceleration[i].y += force[i].y / mass[i];
+    }
 }
 
 void ParticleSystem::setMass(size_t idx, float mass) {
