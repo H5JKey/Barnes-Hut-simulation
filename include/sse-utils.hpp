@@ -1,3 +1,5 @@
+#pragma once
+
 #if defined(__SSE__) || defined(_M_IX86) || defined(_M_X64)
 #define USE_SSE_INTRINSICS 1
 #else

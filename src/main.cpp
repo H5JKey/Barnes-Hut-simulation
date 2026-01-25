@@ -9,14 +9,14 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 20000
+    PARTICLES_NUM = 2000
 };
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Galaxy Simulation");
     
     PhysicsEngine physics;
-    BarnesHutCalculator forceCalculator(window.getSize(), &physics, 0.6f);
+    BarnesHutCalculator forceCalculator(window.getSize(), &physics, 0.5f);
     
     ParticleSystem particles(PARTICLES_NUM, window.getSize());
     std::vector<sf::Vector2f> forces;

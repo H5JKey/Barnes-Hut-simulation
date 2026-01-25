@@ -1,12 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <math.h>
+#include "sse-utils.hpp"
 
 class ParticleSystem {
 private:
-    std::vector<sf::Vector2f> position;
-    std::vector<sf::Vector2f> velocity;
-    std::vector<sf::Vector2f> acceleration;
+    std::vector<float> position_x, position_y;
+    std::vector<float> velocity_x, velocity_y;
+    std::vector<float> acceleration_x, acceleration_y;
     std::vector<float> mass;
     sf::Vector2u worldSize;
     size_t count;
@@ -31,8 +32,6 @@ public:
     ~ParticleSystem() = default;
     
 private:
-    void updatePosition(sf::Time& elapsedTime);
-	void updateVelocity(sf::Time& elapsedTime);
 
     void init();
 };
