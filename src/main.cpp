@@ -9,7 +9,7 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 2000
+    PARTICLES_NUM = 15000
 };
 
 int main() {

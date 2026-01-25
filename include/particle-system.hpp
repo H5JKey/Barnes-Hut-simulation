@@ -1,14 +1,18 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <math.h>
+#include <memory>
 #include "sse-utils.hpp"
+#include "aligned-allacator.hpp"
+
 
 class ParticleSystem {
 private:
-    std::vector<float> position_x, position_y;
-    std::vector<float> velocity_x, velocity_y;
-    std::vector<float> acceleration_x, acceleration_y;
-    std::vector<float> mass;
+    using AlignedAllacator = aligned_allocator<__m128, sizeof(__m128)>;
+    std::vector<float, AlignedAllacator> position_x, position_y;
+    std::vector<float, AlignedAllacator> velocity_x, velocity_y;
+    std::vector<float, AlignedAllacator> acceleration_x, acceleration_y;
+    std::vector<float, AlignedAllacator> mass;
     sf::Vector2u worldSize;
     size_t count;
 

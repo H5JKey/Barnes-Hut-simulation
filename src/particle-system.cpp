@@ -68,8 +68,8 @@ void ParticleSystem::update(sf::Time& elapsedTime) {
 
                 __m128 position_delta_x = _mm_mul_ps(sse_velocity_x, sse_dt);
                 __m128 position_delta_y = _mm_mul_ps(sse_velocity_y, sse_dt);
-                sse_velocity_x = _mm_add_ps(sse_position_x, position_delta_x);
-                sse_velocity_y = _mm_add_ps(sse_position_y, position_delta_y);
+                sse_position_x = _mm_add_ps(sse_position_x, position_delta_x);
+                sse_position_y = _mm_add_ps(sse_position_y, position_delta_y);
 
                 _mm_store_ps(&position_x[i], sse_position_x);
                 _mm_store_ps(&position_y[i], sse_position_y);
