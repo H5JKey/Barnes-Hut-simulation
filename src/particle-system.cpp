@@ -38,63 +38,15 @@ void ParticleSystem::init() {
 
 void ParticleSystem::update(sf::Time& elapsedTime) {
     float dt = elapsedTime.asSeconds();
-    #if USE_SSE_INTRINSICS
-    for (size_t i = 0; i < count; i += 4) {
-            size_t batch_size = std::min(static_cast<size_t>(4), count - i);
-            if (batch_size<4) {
-                for (int j=0; j<batch_size; j++) {
-                    velocity_x[i+j] += acceleration_x[i+j] * dt;
-                    velocity_y[i+j] += acceleration_y[i+j] * dt;
-                    position_x[i+j] += velocity_x[i+j] * dt;
-                    position_y[i+j] += velocity_y[i+j] * dt;
-                    acceleration_x[i+j] = 0;
-                    acceleration_y[i+j] = 0;
-                }
-            }
-            else {
-                __m128 sse_dt = _mm_set1_ps(dt);
-
-                __m128 sse_position_x = _mm_load_ps(&position_x[i]);
-                __m128 sse_position_y = _mm_load_ps(&position_y[i]);
-                __m128 sse_velocity_x = _mm_load_ps(&velocity_x[i]);
-                __m128 sse_velocity_y = _mm_load_ps(&velocity_y[i]);
-                __m128 sse_acceleration_x = _mm_load_ps(&acceleration_x[i]);
-                __m128 sse_acceleration_y = _mm_load_ps(&acceleration_y[i]);
-
-                __m128 velocity_delta_x = _mm_mul_ps(sse_acceleration_x, sse_dt);
-                __m128 velocity_delta_y = _mm_mul_ps(sse_acceleration_y, sse_dt);
-                sse_velocity_x = _mm_add_ps(sse_velocity_x, velocity_delta_x);
-                sse_velocity_y = _mm_add_ps(sse_velocity_y, velocity_delta_y);
-
-                __m128 position_delta_x = _mm_mul_ps(sse_velocity_x, sse_dt);
-                __m128 position_delta_y = _mm_mul_ps(sse_velocity_y, sse_dt);
-                sse_position_x = _mm_add_ps(sse_position_x, position_delta_x);
-                sse_position_y = _mm_add_ps(sse_position_y, position_delta_y);
-
-                _mm_store_ps(&position_x[i], sse_position_x);
-                _mm_store_ps(&position_y[i], sse_position_y);
-                _mm_store_ps(&velocity_x[i], sse_velocity_x);
-                _mm_store_ps(&velocity_y[i], sse_velocity_y);
-
-                __m128 zero = _mm_setzero_ps();
-                _mm_store_ps(&acceleration_x[i], zero);
-                _mm_store_ps(&acceleration_y[i], zero);
-            }
-        }
-    #else
-    #pragma omp parallel for
+    #pragma omp simd
     for (int i=0; i<count; i++) {
         velocity_x[i] += acceleration_x[i] * dt;
         velocity_y[i] += acceleration_y[i] * dt;
         position_x[i] += velocity_x[i] * dt;
         position_y[i] += velocity_y[i] * dt;
-    }
-    #pragma omp parallel for
-    for (int i = 0; i < count; i++) {
         acceleration_x[i] = 0;
         acceleration_y[i] = 0;
     }
-    #endif
     
     for (int i = count - 1; i >= 0; --i) {
         const auto& pos = getPosition(i);
@@ -123,7 +75,7 @@ void ParticleSystem::update(sf::Time& elapsedTime) {
 }
 
 void ParticleSystem::accelerate(std::vector<sf::Vector2f> force) {
-    #pragma omp parallel for
+    #pragma omp simd
     for (int i = 0; i < count; i++) {
         acceleration_x[i] += force[i].x / mass[i];
         acceleration_y[i] += force[i].y / mass[i];

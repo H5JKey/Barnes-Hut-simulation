@@ -12,6 +12,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         /O2
         /fp:fast
         /arch:AVX2
+        /openmp:experimental
         /GL
         /Oi
     )
