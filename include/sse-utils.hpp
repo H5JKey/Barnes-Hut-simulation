@@ -27,5 +27,3 @@ inline float fastSqrt(float x) noexcept {
     return x;
 #endif
 }
-
-

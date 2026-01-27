@@ -7,33 +7,8 @@ BarnesHutCalculator::BarnesHutCalculator(sf::Vector2u worldSize, PhysicsEngine* 
 void BarnesHutCalculator::calculateForces(const ParticleSystem& particles, std::vector<sf::Vector2f>& forces) {
     forces.resize(particles.getCount());
     quadTree->rebuild(particles, worldSize);
-    updateCenterOfMass(particles);
-    #pragma omp parallel for schedule(dynamic, 32)
     for (int i=0; i<particles.getCount(); i++) {
         forces[i] = calculateForceWithTree(i, particles, theta);
-    }
-}
-
-
-void BarnesHutCalculator::updateCenterOfMass(const ParticleSystem& particles) {
-    for (int i=quadTree->size() - 1; i >= 0; i--) {
-        if (quadTree->getNode(i).isLeaf) {
-            if (quadTree->getNode(i).particleIndex != -1) {
-                quadTree->getNode(i).centerOfMass = particles.getPosition(quadTree->getNode(i).particleIndex);
-                quadTree->getNode(i).totalMass = particles.getMass(quadTree->getNode(i).particleIndex);
-            }
-            else {
-                quadTree->getNode(i).totalMass = 0;
-                quadTree->getNode(i).centerOfMass = {0, 0};
-            }
-        }
-        else {
-            for (int child = 0; child < 4; child++) {
-                quadTree->getNode(i).centerOfMass+=quadTree->getNode(quadTree->getNode(i).children[child]).centerOfMass*quadTree->getNode(quadTree->getNode(i).children[child]).totalMass;
-                quadTree->getNode(i).totalMass+=quadTree->getNode(quadTree->getNode(i).children[child]).totalMass;
-            }
-            quadTree->getNode(i).centerOfMass/=quadTree->getNode(i).totalMass;
-        }
     }
 }
 
@@ -57,8 +32,7 @@ sf::Vector2f BarnesHutCalculator::calculateForceWithTree(int targetIndex, const 
     } 
     else {
         float squaredDistance = physics->computeSquaredLength(particles.getPosition(targetIndex) - quadTree->getNode(nodeIndex).centerOfMass);
-        float ratio = quadTree->getNode(nodeIndex).size * quadTree->getNode(nodeIndex).size / squaredDistance;
-        
+        float ratio = quadTree->getNode(nodeIndex).squaredSize / squaredDistance;
         if (ratio < theta*theta) {
             return physics->calculateForce(particles.getMass(targetIndex), particles.getPosition(targetIndex), quadTree->getNode(nodeIndex).totalMass, quadTree->getNode(nodeIndex).centerOfMass);
         }
