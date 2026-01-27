@@ -26,7 +26,7 @@ void QuadTree::rebuild(const ParticleSystem& particles, sf::Vector2u size) {
     buildQuadTree(particles, std::move(idx), sf::Vector2f(root_size / 2, root_size / 2), root_size);
 }
 
-int QuadTree::buildQuadTree(const ParticleSystem& particles, const std::vector<int> idx, sf::Vector2f center, float size) {
+int QuadTree::buildQuadTree(const ParticleSystem& particles, const std::vector<int>& idx, sf::Vector2f center, float size) {
     nodes.emplace_back(center, size);
     int currentIdx = nodes.size() - 1;
     if (idx.size() == 0) {
@@ -53,17 +53,21 @@ int QuadTree::buildQuadTree(const ParticleSystem& particles, const std::vector<i
         sf::Vector2f position = particles.getPosition(idx[i]);
         float mass = particles.getMass(idx[i]);
 
-        if (position.x < center.x) {
-            if (position.y < center.y) 
-                nw.push_back(idx[i]);
-            else
-                sw.push_back(idx[i]);
-        }
-        else {
-            if (position.y < center.y) 
-                ne.push_back(idx[i]);
-            else
-                se.push_back(idx[i]);
+        int quadrant = ((position.x >= center.x) << 1) | (position.y >= center.y);
+        switch (quadrant)
+        {
+        case 0:
+            nw.push_back(idx[i]);
+            break;
+        case 1:
+            sw.push_back(idx[i]);
+            break;
+        case 2:
+            ne.push_back(idx[i]);
+            break;
+        case 3:
+            se.push_back(idx[i]);
+            break;
         }
         totalMass+=mass;
         centerOfMass+=mass*position;
