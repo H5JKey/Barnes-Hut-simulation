@@ -8,33 +8,63 @@ ParticleSystem::ParticleSystem(size_t count, sf::Vector2u worldSize) : worldSize
     velocity_y.resize(count);
     acceleration_x.resize(count);
     acceleration_y.resize(count);
+    colors.resize(count);
     mass.resize(count);
     init();
 }
 
 void ParticleSystem::init() {
-    position_x[0] = worldSize.x / 2;
-    position_y[0] = worldSize.y / 2;
-    mass[0] = 175000;
-    for (size_t i = 1; i < count; i++) {
-        float radius = 10 + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/300));
+    position_x[0] = 3700;
+    position_y[0] = 3700;
+    velocity_x[0] = 7000;
+    mass[0] = 100000000;
+    colors[0] = sf::Color::White;
+    for (size_t i = 1; i < count / 2; i++) {
+        float radius = 10 + static_cast<float>(rand() % 800);
 
         float phi = 2 * 3.14159 * static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
         
-        float x = worldSize.x / 2 + radius * cos(phi) + (rand() % 20 - 10);
-        float y = worldSize.y / 2 + radius * sin(phi) + (rand() % 20 - 10);
+        float x = position_x[0] + radius * cos(phi) + (rand() % 20 - 10);
+        float y = position_y[0] + radius * sin(phi) + (rand() % 20 - 10);
         
         position_x[i] = x;
         position_y[i] = y;
-        mass[i] = rand() % 1500 + 1;
+        mass[i] = rand() % 15000 + 1;
 
-        float orbital_velocity = sqrt(10000.0f / radius) * 100;
+        float orbital_velocity = sqrt(667*100000000.0f / radius);
 
-        velocity_x[i] = orbital_velocity * sin(-phi) + (rand() % 50 - 50); 
+        velocity_x[i] = orbital_velocity * sin(-phi) + (rand() % 50 - 50) + 7000; 
         velocity_y[i] = orbital_velocity * cos(phi) + (rand() % 50 - 50);
+        colors[i] = sf::Color::White;
+    }
+    position_x[count / 2] = worldSize.x - 3700;
+    position_y[count / 2] = worldSize.y - 3700;
+    velocity_x[count / 2] = -7000;
+    mass[count / 2] = 100000000;
+    colors[count / 2] = sf::Color::White;
+    for (size_t i = count / 2 + 1; i < count; i++) {
+        float radius = 10 + static_cast<float>(rand() % 800);
+
+        float phi = 2 * 3.14159 * static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+        
+        float x = position_x[count / 2] + radius * cos(phi) + (rand() % 20 - 10);
+        float y = position_y[count / 2] + radius * sin(phi) + (rand() % 20 - 10);
+        
+        position_x[i] = x;
+        position_y[i] = y;
+        mass[i] = rand() % 15000 + 1;
+
+        float orbital_velocity = sqrt(667*100000000.0f / radius);
+
+        velocity_x[i] = orbital_velocity * sin(-phi) + (rand() % 50 - 50) - 7000; 
+        velocity_y[i] = orbital_velocity * cos(phi) + (rand() % 50 - 50);
+        colors[i] = sf::Color::White;
     }
 }
 
+sf::Color ParticleSystem::getColor(size_t idx) const {
+        return colors[idx];
+    }
 
 void ParticleSystem::update(sf::Time& elapsedTime) {
     float dt = elapsedTime.asSeconds();
@@ -61,6 +91,7 @@ void ParticleSystem::update(sf::Time& elapsedTime) {
                 std::swap(velocity_y[i], velocity_y.back());
                 std::swap(acceleration_x[i], acceleration_x.back());
                 std::swap(acceleration_y[i], acceleration_y.back());
+                std::swap(colors[i], colors.back());
             }
             position_x.pop_back();
             position_y.pop_back();
@@ -69,6 +100,7 @@ void ParticleSystem::update(sf::Time& elapsedTime) {
             velocity_y.pop_back();
             acceleration_x.pop_back();
             acceleration_y.pop_back();
+            colors.pop_back();
             count--;
         }
     }

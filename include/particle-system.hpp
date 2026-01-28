@@ -6,6 +6,7 @@
 
 class ParticleSystem {
 private:
+    std::vector<sf::Color> colors;
     std::vector<float> position_x, position_y;
     std::vector<float> velocity_x, velocity_y;
     std::vector<float> acceleration_x, acceleration_y;
@@ -22,6 +23,7 @@ public:
     void accelerate(std::vector<sf::Vector2f> force);
     float getMass(size_t idx) const;
 
+    sf::Color getColor(size_t idx) const;
     void setPosition(size_t idx, const sf::Vector2f& position);
     sf::Vector2f getPosition(size_t idx) const;
 
