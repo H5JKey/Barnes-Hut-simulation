@@ -62,9 +62,6 @@ void ParticleSystem::init() {
     }
 }
 
-sf::Color ParticleSystem::getColor(size_t idx) const {
-        return colors[idx];
-    }
 
 void ParticleSystem::update(sf::Time& elapsedTime) {
     float dt = elapsedTime.asSeconds();
@@ -120,6 +117,10 @@ void ParticleSystem::setMass(size_t idx, float mass) {
 
 float ParticleSystem::getMass(size_t idx) const {
     return mass[idx];
+}
+
+sf::Color ParticleSystem::getColor(size_t idx) const {
+    return colors[idx];
 }
 
 void ParticleSystem::setPosition(size_t idx, const sf::Vector2f& position) {
