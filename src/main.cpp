@@ -9,11 +9,11 @@
 #include <iostream>
 
 enum {
-    PARTICLES_NUM = 100000
+    PARTICLES_NUM = 3000
 };
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(1600, 1600), "Galaxy Simulation");
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Galaxy Simulation");
     
     PhysicsEngine physics;
     BarnesHutCalculator forceCalculator(window.getSize(), &physics, 0.5f);
