@@ -27,3 +27,13 @@ inline float fastSqrt(float x) noexcept {
     return x;
 #endif
 }
+
+#if USE_SSE_INTRINSICS
+inline float rsqrtf32(float x) noexcept {
+    __m128 in = _mm_set_ss(x);
+    __m128 result = _mm_rsqrt_ss(in);
+    float final_result;
+    _mm_store_ss(&final_result, result);
+    return final_result;
+}
+#endif

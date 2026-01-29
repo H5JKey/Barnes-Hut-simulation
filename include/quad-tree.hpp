@@ -36,5 +36,5 @@ public:
     size_t size();
     Node& getNode(int i);
 private:
-    int buildQuadTree(const ParticleSystem& particles, const std::vector<int>& idx, sf::Vector2f center, float size);
+    int buildQuadTree(const ParticleSystem& particles, std::vector<int>::iterator begin, std::vector<int>::iterator end, sf::Vector2f center, float size);
 };
