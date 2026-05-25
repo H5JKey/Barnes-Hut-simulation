@@ -13,7 +13,7 @@
 #endif
 
 
-constexpr int PARTICLES_NUM = 7000;
+constexpr int PARTICLES_NUM = 25000;
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Galaxy Simulation");
