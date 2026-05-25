@@ -2,6 +2,7 @@
 #include <memory>
 #include "particle-system.hpp"
 #include "quad-tree.hpp"
+#include "utils.hpp"
 
 class IForceCalculator {
 public:
@@ -21,19 +22,10 @@ public:
     QuadTree* getQuadTree() const;
 private:
     sf::Vector2f calculateForceWithTree(
-        int targetIndex, 
+        const int targetIndex,
         const std::vector<float>& positions_x, 
         const std::vector<float>& positions_y, 
         const std::vector<float>& masses, 
-        float theta
-    );
-
-    sf::Vector2f calculateForceWithTree(
-        int targetIndex, 
-        const std::vector<float>& positions_x, 
-        const std::vector<float>& positions_y, 
-        const std::vector<float>& masses, 
-        float theta,
-        int nodeIndex
-    );
+        float thetaSquared
+    ) const;
 };

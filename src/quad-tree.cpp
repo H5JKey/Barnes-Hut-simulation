@@ -6,7 +6,7 @@ size_t QuadTree::size() {
     return nodes.size();
 }
 
-QuadTree::Node& QuadTree::getNode(int i){
+QuadTree::Node& QuadTree::getNode(int i) {
     return nodes[i];
 }
 

@@ -15,6 +15,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         /openmp:experimental
         /GL
         /Oi
+        /LTCG
     )
     else()
         target_compile_options(Barnes-Hut-simulation PRIVATE 
@@ -27,6 +28,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         -fassociative-math
         -frename-registers
         -fomit-frame-pointer
+        -ftree-vectorize 
+        -funroll-loops
+        -flto=auto
     )
     endif()
 endif()
@@ -45,7 +49,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Profile")
         -fassociative-math
         -frename-registers
         -fno-omit-frame-pointer
+        -ftree-vectorize 
+        -funroll-loops
         -g
+        -flto=auto
       )
       
       target_link_libraries(Barnes-Hut-simulation PRIVATE 

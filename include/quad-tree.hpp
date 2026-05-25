@@ -10,7 +10,7 @@
 
 
 class QuadTree {
-private:
+public:
     class Node {
     public:
         sf::Vector2f centerOfMass;
@@ -28,6 +28,7 @@ private:
         Node(sf::Vector2f center, double size) : isLeaf(true), center(center), size(size), squaredSize(size*size), particleIndex(-1), centerOfMass(0,0), totalMass(0) {
         }
     };
+private:
     std::vector<Node> nodes;
 public:
     QuadTree();
