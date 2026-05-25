@@ -65,8 +65,9 @@ void ParticleSystem::init() {
 
 void ParticleSystem::update(sf::Time& elapsedTime) {
     float dt = elapsedTime.asSeconds();
+    const size_t n = count;
     #pragma omp simd
-    for (int i=0; i<count; i++) {
+    for (int i=0; i<n; i++) {
         velocity_x[i] += acceleration_x[i] * dt;
         velocity_y[i] += acceleration_y[i] * dt;
         position_x[i] += velocity_x[i] * dt;
@@ -115,11 +116,11 @@ void ParticleSystem::setMass(size_t idx, float mass) {
     this->mass[idx] = mass;
 }
 
-float ParticleSystem::getMass(size_t idx) const {
+float ParticleSystem::getMass(size_t idx) const noexcept{
     return mass[idx];
 }
 
-sf::Color ParticleSystem::getColor(size_t idx) const {
+sf::Color ParticleSystem::getColor(size_t idx) const noexcept{
     return colors[idx];
 }
 
@@ -128,7 +129,7 @@ void ParticleSystem::setPosition(size_t idx, const sf::Vector2f& position) {
     this->position_y[idx] = position.y;
 }
 
-sf::Vector2f ParticleSystem::getPosition(size_t idx) const {
+sf::Vector2f ParticleSystem::getPosition(size_t idx) const noexcept{
     return {position_x[idx], position_y[idx]};
 }
 
@@ -137,10 +138,22 @@ void ParticleSystem::setVelocity(size_t idx, const sf::Vector2f& velocity) {
     this->velocity_y[idx] = velocity.y;
 }
 
-sf::Vector2f ParticleSystem::getVelocity(size_t idx) const {
+sf::Vector2f ParticleSystem::getVelocity(size_t idx) const noexcept{
     return {velocity_x[idx], velocity_y[idx]};
 }
 
-size_t ParticleSystem::getCount() const {
+size_t ParticleSystem::getCount() const noexcept{
     return count;
+}
+
+const std::vector<float>& ParticleSystem::getPositions_x() const noexcept {
+    return position_x;
+}
+
+const std::vector<float>& ParticleSystem::getPositions_y() const noexcept {
+    return position_y;
+}
+
+const std::vector<float>& ParticleSystem::getMasses() const noexcept {
+    return mass;
 }

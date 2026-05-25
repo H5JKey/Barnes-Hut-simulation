@@ -31,6 +31,33 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     endif()
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Profile")
+  if(NOT MSVC)
+    find_package(PkgConfig REQUIRED)
+      pkg_check_modules(GPERFTOOLS REQUIRED libprofiler)
+      target_compile_options(Barnes-Hut-simulation PRIVATE 
+        -O3 
+        -ffast-math 
+        -march=native
+        -fno-trapping-math
+        -fno-signed-zeros
+        -fno-math-errno
+        -fassociative-math
+        -frename-registers
+        -fno-omit-frame-pointer
+        -g
+      )
+      
+      target_link_libraries(Barnes-Hut-simulation PRIVATE 
+          ${GPERFTOOLS_LIBRARIES}
+      )
+
+      target_compile_definitions(Barnes-Hut-simulation PRIVATE 
+          ENABLE_PROFILING=1
+      )
+  endif()
+endif()
+
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)

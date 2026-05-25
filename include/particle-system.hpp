@@ -21,16 +21,19 @@ public:
     
     void setMass(size_t idx, float mass);
     void accelerate(std::vector<sf::Vector2f> force);
-    float getMass(size_t idx) const;
+    float getMass(size_t idx) const noexcept;
 
-    sf::Color getColor(size_t idx) const;
+    sf::Color getColor(size_t idx) const noexcept;
     void setPosition(size_t idx, const sf::Vector2f& position);
-    sf::Vector2f getPosition(size_t idx) const;
+    sf::Vector2f getPosition(size_t idx) const noexcept;
 
     void setVelocity(size_t idx, const sf::Vector2f& position);
-    sf::Vector2f getVelocity(size_t idx) const;
+    sf::Vector2f getVelocity(size_t idx) const noexcept;
 
-    size_t getCount() const;
+    const std::vector<float>& getPositions_x() const noexcept;
+    const std::vector<float>& getPositions_y() const noexcept;
+    const std::vector<float>& getMasses() const noexcept;
+    size_t getCount() const noexcept;
 
     ~ParticleSystem() = default;
     

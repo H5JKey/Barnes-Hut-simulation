@@ -20,6 +20,20 @@ public:
     virtual void calculateForces(const ParticleSystem&, std::vector<sf::Vector2f>& forces);
     QuadTree* getQuadTree() const;
 private:
-    sf::Vector2f calculateForceWithTree(int targetIndex, const ParticleSystem& particles, float theta);
-    sf::Vector2f calculateForceWithTree(int targetIndex, const ParticleSystem& particles, float theta, int nodeIndex);
+    sf::Vector2f calculateForceWithTree(
+        int targetIndex, 
+        const std::vector<float>& positions_x, 
+        const std::vector<float>& positions_y, 
+        const std::vector<float>& masses, 
+        float theta
+    );
+
+    sf::Vector2f calculateForceWithTree(
+        int targetIndex, 
+        const std::vector<float>& positions_x, 
+        const std::vector<float>& positions_y, 
+        const std::vector<float>& masses, 
+        float theta,
+        int nodeIndex
+    );
 };
