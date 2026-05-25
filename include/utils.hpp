@@ -39,31 +39,13 @@ namespace Utils {
     #endif
     }
 
-    inline float computeSquaredLength(const sf::Vector2f& vec) noexcept{
-    #if USE_SSE_INTRINSICS
-        __m128 vec_ = _mm_setr_ps(vec.x, vec.y, 0.0f, 0.0f);
-        __m128 sq = _mm_mul_ps(vec_, vec_);
-        __m128 sum = _mm_hadd_ps(sq, sq);
-        return _mm_cvtss_f32(sum);
-    #else 
-        float len = vec.x * vec.x + vec.y * vec.y;
+    inline float computeSquaredLength(float vec_x, float vec_y) noexcept{
+        float len = vec_x * vec_x + vec_y * vec_y;
         return len;
-    #endif
     }
 
-    inline float computeLength(const sf::Vector2f& vec) noexcept{
-    #if USE_SSE_INTRINSICS
-        __m128 vec_ = _mm_setr_ps(vec.x, vec.y, 0.0f, 0.0f);
-        __m128 sq = _mm_mul_ps(vec_, vec_);
-        __m128 sum = _mm_hadd_ps(sq, sq);
-        __m128 invSqrt = _mm_rsqrt_ss(sum);
-        __m128 result = _mm_mul_ss(sum, invSqrt);
-        float final_result;
-        _mm_store_ss(&final_result, result);
-        return final_result;
-    #else 
-        float len = std::sqrt(vec.x * vec.x + vec.y * vec.y);
+    inline float computeLength(float vec_x, float vec_y) noexcept{
+        float len = fastSqrt(vec_x * vec_x + vec_y * vec_y);
         return len;
-    #endif
     }
 }

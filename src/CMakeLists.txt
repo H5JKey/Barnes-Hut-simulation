@@ -31,6 +31,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         -ftree-vectorize 
         -funroll-loops
         -flto=auto
+        -fno-rtti
     )
     endif()
 endif()
@@ -52,6 +53,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Profile")
         -ftree-vectorize 
         -funroll-loops
         -g
+        -fno-rtti
         -flto=auto
       )
       

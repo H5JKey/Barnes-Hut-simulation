@@ -45,7 +45,7 @@ int QuadTree::buildQuadTree(const ParticleSystem& particles, std::vector<int>::i
     }
     float totalMass = 0;
     sf::Vector2f centerOfMass(0, 0);
-    for (auto i = begin; i != end; i++) {
+    for (auto i = begin; i != end; ++i) {
         sf::Vector2f position = particles.getPosition(*i);
         float mass = particles.getMass(*i);
         totalMass += mass;
@@ -68,10 +68,11 @@ int QuadTree::buildQuadTree(const ParticleSystem& particles, std::vector<int>::i
 
     float new_size = size / 2;
     if (new_size > 1) {
-        nodes[currentIdx].children[0] = buildQuadTree(particles, begin, nw_end, sf::Vector2f(center.x - new_size / 2, center.y - new_size / 2), new_size);
-        nodes[currentIdx].children[1] = buildQuadTree(particles, nw_end, mid_y, sf::Vector2f(center.x + new_size / 2, center.y - new_size / 2), new_size);
-        nodes[currentIdx].children[2] = buildQuadTree(particles, mid_y, sw_end, sf::Vector2f(center.x - new_size / 2, center.y + new_size / 2), new_size);
-        nodes[currentIdx].children[3] = buildQuadTree(particles, sw_end, end, sf::Vector2f(center.x + new_size / 2, center.y + new_size / 2), new_size);
+        float offset = new_size / 2;
+        nodes[currentIdx].children[0] = buildQuadTree(particles, begin, nw_end, sf::Vector2f(center.x - offset, center.y - offset), new_size);
+        nodes[currentIdx].children[1] = buildQuadTree(particles, nw_end, mid_y, sf::Vector2f(center.x + offset, center.y - offset), new_size);
+        nodes[currentIdx].children[2] = buildQuadTree(particles, mid_y, sw_end, sf::Vector2f(center.x - offset, center.y + offset), new_size);
+        nodes[currentIdx].children[3] = buildQuadTree(particles, sw_end, end, sf::Vector2f(center.x + offset, center.y + offset), new_size);
         nodes[currentIdx].isLeaf = false;
     }
     return currentIdx;

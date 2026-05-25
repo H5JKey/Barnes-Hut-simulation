@@ -1,8 +1,12 @@
 #include "physics-engine.hpp"
 
-sf::Vector2f PhysicsEngine::calculateForce(float mass1, sf::Vector2f position1, float mass2, sf::Vector2f position2) const noexcept{
-    sf::Vector2f direction = (position2 - position1);
-    float inv_len = Utils::fastInvSqrt(Utils::computeSquaredLength(direction)+0.1f);
-    direction *= inv_len;
-    return direction * G * mass1 * mass2 * (inv_len*inv_len);
+void PhysicsEngine::calculateForce(float mass1, float position1_x, float position1_y, float mass2, float position2_x, float position2_y, float& force_x, float& force_y) const noexcept {
+    float direction_x = position2_x - position1_x;
+    float direction_y = position2_y - position1_y;
+    float inv_len = Utils::fastInvSqrt(Utils::computeSquaredLength(direction_x, direction_y)+0.1f);
+    float magnitude = mass1 * mass2 * G * inv_len * inv_len * inv_len;
+    direction_x *= magnitude;
+    direction_y *= magnitude;
+    force_x = direction_x;
+    force_y = direction_y;
 }
