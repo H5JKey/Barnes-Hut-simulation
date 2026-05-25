@@ -8,12 +8,18 @@
 #include <vector>
 #include <iostream>
 
-enum {
-    PARTICLES_NUM = 100000
-};
+#ifdef ENABLE_PROFILING
+#include <gperftools/profiler.h>
+#endif
+
+
+constexpr int PARTICLES_NUM = 7000;
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 800), "Galaxy Simulation");
+    #ifdef ENABLE_PROFILING
+    ProfilerStart("barnes_hut_profile.prof");
+    #endif
     
     PhysicsEngine physics;
     sf::View view;
@@ -65,6 +71,10 @@ int main() {
         //window.setView(window.getDefaultView());
     }
     std::cout<<"AVERAGE FRAME TIME: "<<av.asMilliseconds()/cnt<<'\n';
+
+    #ifdef ENABLE_PROFILING
+    ProfilerStop();
+    #endif
     
     return 0;
 }
