@@ -1,8 +1,8 @@
 # Barnes-Hut-simulation
 
-## Demo (130000 particles)
+## Demo (350k particles)
 
-<img width="480" height="480" alt="demo" src="https://github.com/user-attachments/assets/c6067937-84e9-4172-a474-8087c3eeb83c" />
+<img width="488" height="480" alt="demo (1)" src="https://github.com/user-attachments/assets/807d3768-a8fa-4a0d-a31a-2a7ee36a48aa" />
 
 ## Build
 
