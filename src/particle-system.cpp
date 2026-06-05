@@ -104,7 +104,7 @@ void ParticleSystem::update(sf::Time& elapsedTime) {
     }
 }
 
-void ParticleSystem::accelerate(std::vector<sf::Vector2f> force) {
+void ParticleSystem::accelerate(const std::vector<sf::Vector2f>& force) {
     #pragma omp simd
     for (int i = 0; i < count; i++) {
         acceleration_x[i] += force[i].x / mass[i];
