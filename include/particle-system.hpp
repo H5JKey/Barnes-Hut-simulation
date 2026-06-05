@@ -20,7 +20,7 @@ public:
     void update(sf::Time& elapsedTime);
     
     void setMass(size_t idx, float mass);
-    void accelerate(std::vector<sf::Vector2f> force);
+    void accelerate(const std::vector<sf::Vector2f>& force);
     float getMass(size_t idx) const noexcept;
 
     sf::Color getColor(size_t idx) const noexcept;
